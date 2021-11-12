@@ -54,6 +54,10 @@ http_archive(
     sha256 = ENVOY_SHA256,
     strip_prefix = ENVOY_REPO + "-" + ENVOY_SHA,
     url = "https://github.com/" + ENVOY_ORG + "/" + ENVOY_REPO + "/archive/" + ENVOY_SHA + ".tar.gz",
+    patch_cmds = [
+        "sed -i 's#name =#visibility = [\"//visibility:public\"],\\n    name =#g' source/extensions/filters/network/dubbo_proxy/BUILD",
+        "sed -i 's#name =#visibility = [\"//visibility:public\"],\\n    name =#g' source/extensions/filters/network/dubbo_proxy/filters/BUILD",
+    ]
 )
 
 load("@envoy//bazel:api_binding.bzl", "envoy_api_binding")
