@@ -163,6 +163,7 @@ bool PluginRootContext::updatePeer(std::string_view key,
 
 FilterHeadersStatus PluginContext::onRequestHeaders(uint32_t, bool) {
   // strip and store downstream peer metadata
+  LOG_DEBUG("kebe test onRequestHeaders");
   auto downstream_metadata_id = getRequestHeader(ExchangeMetadataHeaderId);
   if (downstream_metadata_id != nullptr &&
       !downstream_metadata_id->view().empty()) {
@@ -205,6 +206,7 @@ FilterHeadersStatus PluginContext::onRequestHeaders(uint32_t, bool) {
 }
 
 FilterHeadersStatus PluginContext::onResponseHeaders(uint32_t, bool) {
+  LOG_DEBUG("kebe test onResponseHeaders");
   // strip and store upstream peer metadata
   auto upstream_metadata_id = getResponseHeader(ExchangeMetadataHeaderId);
   if (upstream_metadata_id != nullptr &&

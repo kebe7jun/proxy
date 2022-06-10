@@ -233,10 +233,15 @@ static_resources:
     connect_timeout: 0.25s
     type: static
     lb_policy: round_robin
-    hosts:
-    - socket_address:
-        address: 127.0.0.1
-        port_value: 8099
+    load_assignment:
+      cluster_name: service1
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 8099
 admin:
   access_log_path: "/dev/null"
   address:

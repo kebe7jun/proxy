@@ -57,6 +57,8 @@ http_archive(
     patch_cmds = [
         "sed -i 's#name =#visibility = [\"//visibility:public\"],\\n    name =#g' source/extensions/filters/network/dubbo_proxy/BUILD",
         "sed -i 's#name =#visibility = [\"//visibility:public\"],\\n    name =#g' source/extensions/filters/network/dubbo_proxy/filters/BUILD",
+        # "sed -i 's#name =#visibility = [\"//visibility:public\"],\\n    name =#g' source/extensions/common/wasm/BUILD",
+        "sed -i '70s#.*#\"//visibility:public\",#g; 71,72d' source/extensions/common/wasm/BUILD",
     ]
 )
 
