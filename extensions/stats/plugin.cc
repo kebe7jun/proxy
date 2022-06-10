@@ -553,16 +553,20 @@ bool PluginRootContext::onDone() {
 }
 
 void PluginRootContext::onTick() {
+  LOG_ERROR("onTick");
   if (request_queue_.empty()) {
+    LOG_ERROR("request requeue empty");
     return;
   }
   for (auto const& item : request_queue_) {
     // requestinfo is null, so continue.
     if (item.second == nullptr) {
+      LOG_ERROR("request info null");
       continue;
     }
     Context* context = getContext(item.first);
     if (context == nullptr) {
+      LOG_ERROR("request context null");
       continue;
     }
     context->setEffectiveContext();
@@ -575,9 +579,16 @@ void PluginRootContext::report(::Wasm::Common::RequestInfo& request_info,
   // HTTP peer metadata should be done by the time report is called for a
   // request info. TCP metadata might still be awaiting.
   // Upstream host should be selected for metadata fallback.
+  LOG_ERROR("on report");
   Wasm::Common::PeerNodeInfo peer_node_info(peer_metadata_id_key_,
                                             peer_metadata_key_);
+  // if (peer_node_info.found()) {
+  //   LOG_ERROR(absl::StrCat("peer node info: name: ", peer_node_info.get().name()->str()));
+  // } else {
+  //   LOG_ERROR("empty peer node");
+  // }
   if (request_info.request_protocol == Protocol::TCP) {
+    LOG_ERROR("request protocol: TCP");
     // For TCP, if peer metadata is not available, peer id is set as not found.
     // Otherwise, we wait for metadata exchange to happen before we report any
     // metric, until the end.
@@ -600,13 +611,22 @@ void PluginRootContext::report(::Wasm::Common::RequestInfo& request_info,
       }
     }
   }
+  LOG_ERROR(absl::StrCat("request cluster name: ", request_info.upstream_cluster));
+  LOG_ERROR(absl::StrCat("request destination port: ", request_info.destination_port));
+  LOG_ERROR(absl::StrCat("request destination addr: ", request_info.destination_address));
+  LOG_ERROR(absl::StrCat("request response code: ", request_info.response_code));
+  LOG_ERROR(absl::StrCat("request source port: ", request_info.source_port));
+  LOG_ERROR(absl::StrCat("request source addr: ", request_info.source_address));
+  LOG_ERROR(absl::StrCat("request source pri: ", request_info.source_principal));
+  LOG_ERROR(absl::StrCat("request path: ", request_info.path));
+  LOG_ERROR(absl::StrCat("request dur: ", request_info.duration));
 
   map(istio_dimensions_, outbound_, peer_node_info.get(), request_info);
 
   for (size_t i = 0; i < expressions_.size(); i++) {
     if (!evaluateExpression(expressions_[i].token,
                             &istio_dimensions_.at(count_standard_labels + i))) {
-      LOG_TRACE(absl::StrCat("Failed to evaluate expression: <",
+      LOG_ERROR(absl::StrCat("Failed to evaluate expression: <",
                              expressions_[i].expression, ">"));
       istio_dimensions_[count_standard_labels + i] = "unknown";
     }
@@ -618,7 +638,7 @@ void PluginRootContext::report(::Wasm::Common::RequestInfo& request_info,
       if (end_stream || stat.recurrent_) {
         stat.record(request_info);
       }
-      LOG_DEBUG(
+      LOG_ERROR(
           absl::StrCat("metricKey cache hit ", ", stat=", stat.metric_id_));
     }
     cache_hits_accumulator_++;
@@ -635,11 +655,12 @@ void PluginRootContext::report(::Wasm::Common::RequestInfo& request_info,
       continue;
     }
     auto stat = statgen.resolve(istio_dimensions_);
-    LOG_DEBUG(absl::StrCat("metricKey cache miss ",
+    LOG_ERROR(absl::StrCat("metricKey cache miss ",
                            ::Wasm::Common::toAbslStringView(statgen.name()),
                            " ", ", stat=", stat.metric_id_,
                            ", recurrent=", stat.recurrent_));
-    if (end_stream || stat.recurrent_) {
+    if (true || stat.recurrent_) {
+      LOG_ERROR("record stat!!");
       stat.record(request_info);
     }
     stats.push_back(stat);

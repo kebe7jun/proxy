@@ -340,6 +340,7 @@ class PluginContext : public Context {
 
   // HTTP streams start with headers.
   FilterHeadersStatus onRequestHeaders(uint32_t, bool) override {
+    LOG_ERROR("on request headers");
     ::Wasm::Common::populateRequestProtocol(&request_info_);
     // Save host value for recurrent reporting.
     // Beware that url_host and any other request headers are only available in
@@ -354,12 +355,14 @@ class PluginContext : public Context {
   // Since HTTP metadata exchange uses headers in both directions, this is a
   // safe place to register for both inbound and outbound streams.
   FilterHeadersStatus onResponseHeaders(uint32_t, bool) override {
+    LOG_ERROR("on response headers");
     rootContext()->addToRequestQueue(id(), &request_info_);
     return FilterHeadersStatus::Continue;
   }
 
   // TCP streams start with new connections.
   FilterStatus onNewConnection() override {
+    LOG_ERROR("on new conn");
     request_info_.request_protocol = ::Wasm::Common::Protocol::TCP;
     request_info_.tcp_connections_opened++;
     rootContext()->addToRequestQueue(id(), &request_info_);
@@ -368,11 +371,13 @@ class PluginContext : public Context {
 
   // Called on onData call, so counting the data that is received.
   FilterStatus onDownstreamData(size_t size, bool) override {
+    LOG_ERROR("on down data");
     request_info_.tcp_received_bytes += size;
     return FilterStatus::Continue;
   }
   // Called on onWrite call, so counting the data that is sent.
   FilterStatus onUpstreamData(size_t size, bool) override {
+    LOG_ERROR("on up data");
     request_info_.tcp_sent_bytes += size;
     return FilterStatus::Continue;
   }

@@ -86,7 +86,7 @@ build_envoy_tsan:
 	bazel $(BAZEL_STARTUP_ARGS) build $(BAZEL_BUILD_ARGS) $(BAZEL_CONFIG_TSAN) //src/envoy:envoy
 
 build_envoy_asan:
-	export PATH=$(PATH) CC=$(CC) CXX=$(CXX) && \
+	export PATH=$(PATH) CC=$(CC) CXX =$(CXX) && \
 	bazel $(BAZEL_STARTUP_ARGS) build $(BAZEL_BUILD_ARGS) $(BAZEL_CONFIG_ASAN) @com_googlesource_chromium_v8//:build && \
 	bazel $(BAZEL_STARTUP_ARGS) build $(BAZEL_BUILD_ARGS) $(BAZEL_CONFIG_ASAN) //src/envoy:envoy
 
